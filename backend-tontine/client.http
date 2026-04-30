@@ -1,0 +1,259 @@
+@baseUrl = http://127.0.0.1:8000/api
+# Copie ici le token reçu après la requête LOGIN
+@token = 16|3vcui7Wo0JoYRanYquPIfZ48VTLAwcfESb6cLVpY4d64764f
+
+### REGISTER
+POST {{baseUrl}}/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "THIORO",
+  "telephone": "783936241",
+  "password": "123456",
+  "password_confirmation": "123456"
+}
+
+### LOGIN
+POST {{baseUrl}}/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "telephone": "771234567",
+  "password": "secret123"
+}
+
+### ME
+GET {{baseUrl}}/me
+Authorization: Bearer {{token}}
+
+# Après un login réussi, copie le champ "token" de la réponse et remplace la valeur de @token.
+# Exemple : @token = 3|n9riLupDUTcijNr4e1Ntx5wzdISsPKZxmGpwEDKw480e0575
+
+### CREATE GROUPEMENT
+POST {{baseUrl}}/groupements
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nom": "Groupement Guediawaye Wakinam nimzath",
+  "responsable_id": 1,
+  "montant_min": 10000,
+  "montant_max": 50000,
+  "jour_cotisation": "jeudi",
+  "date_debut_cycle": "2026-05-07",
+  "taux_interet": 5,
+  "plafond_pret": 300000
+}
+
+###LisTE DES GROUPEMENTS
+GET {{baseUrl}}/groupements 
+Authorization: Bearer {{token}}  ← ajoute cette ligne
+
+
+### CREATE COTISATION
+POST {{baseUrl}}/cotisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "membre_id": 1,
+  "groupement_id": 2,
+  "seance_id": 1,
+  "montant": 10000,
+  "note": "Test cotisation"
+}
+
+### CREATE SEANCE
+POST {{baseUrl}}/seances
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "groupement_id": 1,
+  "date_seance": "2026-04-30"
+}
+
+### LISTE DES SEANCES
+GET {{baseUrl}}/seances
+Authorization: Bearer {{token}}
+
+### ajout d'une cotisation
+POST /api/cotisations
+Authorization: Bearer 16|3vcui7Wo0JoYRanYquPIfZ48VTLAwcfESb6cLVpY4d64764f
+
+{
+    "membre_id": 1,
+    "groupement_id": 5,
+    "seance_id": 1,
+    "montant": 25000
+}
+
+
+
+
+
+App\Models\GroupementMembre::create([
+    'membre_id'    => 2,
+    'groupement_id'=> 5,
+    'date_adhesion'=> now(),
+    'statut'       => 'actif',
+]);// Ajouter l'admin comme membre du groupement 1
+
+
+###php artisan tinker
+POST {{baseUrl}}/groupements
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "nom": "Groupement Test Jeudi",
+    "responsable_id": 1,
+    "montant_min": 5000,
+    "montant_max": 50000,
+    "jour_cotisation": "jeudi",
+    "date_debut_cycle": "2026-04-30",
+    "taux_interet": 5,
+    "plafond_pret": 300000
+}
+
+###
+POST {{baseUrl}}/cotisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "membre_id": 1,
+    "groupement_id": 6,
+    "seance_id": 261,
+    "montant": 25000,
+    "note": "Première cotisation"
+}
+
+### POUR TESTER LA VALIDATION DE LA SEANCE CAR ELLE A DEJA UNE COTISATION POUR CET DATE 
+POST {{baseUrl}}/cotisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "membre_id": 1,
+    "groupement_id": 6,
+    "seance_id": 261,
+    "montant": 20000,
+    "note": "Deuxième cotisation"
+}
+
+###Résultat attendu : 422 — "Montant invalide. L'intervalle autorisé est [5 000 – 50 000] FCFA."
+POST {{baseUrl}}/cotisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "membre_id": 1,
+    "groupement_id": 6,
+    "seance_id": 261,
+    "montant": 1000
+}
+
+
+###
+POST http://127.0.0.1:8000/api/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "nom": "Aissatou Diallo",
+    "telephone": "771111111",
+    "password": "secret123",
+    "password_confirmation": "secret123",
+    "role": "membre"
+}
+
+### Test 4 — Mauvais groupement
+POST {{baseUrl}}/cotisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "membre_id": 4,
+    "groupement_id": 6,
+    "seance_id": 261,
+    "montant": 1000
+}
+
+### Montant trop bas
+### "message": "Montant invalide. L'intervalle autoris\u00e9 est [5 000 \u2013 50 000] FCFA."
+
+POST {{baseUrl}}/cotisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "membre_id": 4,
+    "groupement_id": 6,
+    "seance_id": 261,
+    "montant": 1000
+}
+
+
+### Montant trop eleve
+POST {{baseUrl}}/cotisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "membre_id": 4,
+    "groupement_id": 6,
+    "seance_id": 261,
+    "montant": 100000
+}
+
+### Doublons 
+POST {{baseUrl}}/cotisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "membre_id": 4,
+    "groupement_id": 6,
+    "seance_id": 261,
+    "montant": 20000
+}
+
+### Liste des cotisations d'une seance
+GET {{baseUrl}}/cotisations?seance_id=261
+Authorization: Bearer {{token}} 
+Accept: application/json
+
+###
+POST {{baseUrl}}/prets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "membre_id": 4,
+    "groupement_id": 6,
+    "montant": 20000
+}
+
+ 
+### "message": "Ce membre a d\u00e9j\u00e0 un pr\u00eat en cours dans ce groupement.
+POST {{baseUrl}}/prets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "membre_id": 4,
+    "groupement_id": 6,
+    "montant": 500000
+}
+
