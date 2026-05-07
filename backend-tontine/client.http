@@ -257,3 +257,53 @@ Accept: application/json
     "montant": 500000
 }
 
+### liste des prets d'un groupement
+GET {{baseUrl}}/prets?groupement_id=6
+Authorization: Bearer {{token}}
+
+### valider un pret
+PUT {{baseUrl}}/prets/1/valider
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "date_echeance": "2026-05-30"
+}
+
+###
+POST {{baseUrl}}/remboursements
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "pret_id": 1,
+    "montant": 5000,
+    "date_remboursement": "2026-04-30"
+}
+
+
+
+
+// Liste tous les utilisateurs
+###
+GET {{baseUrl}}/utilisateurs
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+// Filtrer par rôle
+GET {{baseUrl}}/utilisateurs?role=membre
+
+// Désactiver un utilisateur
+###
+PUT {{baseUrl}}/utilisateurs/4/desactiver
+Authorization: Bearer {{token}}
+Accept: application/json
+
+// Réactiver
+###
+PUT {{baseUrl}}/utilisateurs/4/activer
+Authorization: Bearer {{token}}
+Accept: application/json

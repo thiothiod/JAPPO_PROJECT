@@ -22,8 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Groupements et cotisations
     Route::apiResource('groupements',    GroupementController::class);
     Route::apiResource('seances',        SeanceController::class);
-    Route::apiResource('remboursements', RemboursementController::class);
-
+    Route::apiResource('remboursements', RemboursementController::class)
+        ->only(['index', 'store', 'show']);
     Route::apiResource('cotisations', CotisationController::class)
          ->except(['update', 'destroy']);
     Route::put('cotisations/{cotisation}/annuler',
@@ -32,12 +32,16 @@ Route::middleware('auth:sanctum')->group(function () {
          [CotisationController::class, 'mesCotisations']);
 
     // Prêts
-    Route::apiResource('prets', PretController::class);
+    Route::apiResource('prets', PretController::class)->except(['update', 'destroy']);
+    Route::put('prets/{pret}/valider', [PretController::class, 'valider']);
+    Route::put('prets/{pret}/refuser', [PretController::class, 'refuser']);
 
     // Utilisateurs (admin seulement)
     Route::apiResource('utilisateurs', UtilisateurController::class);
 
-    Route::apiResource('prets', PretController::class)->except(['update', 'destroy']);
-    Route::put('prets/{pret}/valider', [PretController::class, 'valider']);
-    Route::put('prets/{pret}/refuser', [PretController::class, 'refuser']);
+    Route::apiResource('utilisateurs', UtilisateurController::class);
+    Route::put('utilisateurs/{utilisateur}/activer',
+         [UtilisateurController::class, 'activer']);
+    Route::put('utilisateurs/{utilisateur}/desactiver',
+         [UtilisateurController::class, 'desactiver']);
 });
